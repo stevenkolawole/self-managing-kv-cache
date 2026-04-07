@@ -274,29 +274,7 @@ The policy π_θ is the only parameter; π_ref is frozen. No reward model, no PP
 
 ---
 
-### 3.13 Compressed Chain of Thought — CCoT (Cheng & Van Durme, arXiv 2412)
-
-**Core mechanism:** Inserts special "contemplation tokens" into the generation stream — dense continuous vectors representing entire intermediate reasoning steps in compact form. The model is trained to emit a variable number of contemplation tokens instead of verbose step-by-step reasoning, then decode from them back to text (making them interpretable). Token count is controllable at inference time for a performance-latency tradeoff.
-
-**Relevance:** Direct precedent for the summary token design. CCoT proves that models can be trained to compress reasoning chains into a small number of special dense tokens with minimal accuracy loss, and that these tokens are decodable to text (semantically grounded). For our system, the summary tokens before a `<FORGET>` are analogous to contemplation tokens: they capture the useful content of a dead-end branch before the branch is evicted. The variable-count design (2–8 tokens per segment in our ablation E6d) mirrors CCoT's controllable compression ratio.
-
----
-
-### 3.14 Recurrent Memory Transformer — RMT (Bulatov et al., NeurIPS 2022)
-
-**Core mechanism:** Augments a standard Transformer with memory tokens prepended and appended to each input segment. Output memory tokens become input memory tokens for the next segment, implementing a trained recurrence. Memory tokens have no fixed semantics; they learn to carry whatever information future segments need. Handles sequences far beyond training context length.
-
-**Relevance:** Architectural proof-of-concept for the inline-token approach. RMT shows that a model can learn to write summary information into special tokens at segment boundaries and read it back later — effectively learning a KV management protocol through training. Our `<SUMMARY>...<FORGET>` pattern is the within-sequence generalization of RMT's cross-segment memory: the model learns to write a memory capsule at abandonment time rather than at a fixed segment boundary.
-
----
-
-### 3.15 Vision Transformers Need Registers (Darcet et al., ICLR 2024)
-
-**Core mechanism:** Background image tokens in ViTs develop anomalously high norms because the model co-opts them as scratch space for computations that don't fit into patch tokens. Adding designated "register tokens" provides explicit scratch space, freeing patch tokens to represent clean features. Eliminates high-norm artifact tokens; improves dense prediction.
-
-**Relevance:** Provides empirical evidence that transformer models spontaneously develop a need for scratch-space tokens and will hijack other tokens if none are designated. The inline management tokens in our system are a controlled, explicit version of this: rather than hoping the model discovers scratch-space tokens (and hijacks semantically important positions), training designates management tokens for this purpose. ViT Registers also shows that the spatial attention maps become cleaner and more interpretable after register tokens are added — an analogous "cleaning" effect may appear in reasoning traces after the model learns to offload dead-end content into `<FORGET>` + summary patterns.
-
----
+**Supporting evidence (condensed):** CCoT (Cheng & Van Durme, arXiv 2412) proves models can compress reasoning steps into a few special dense tokens decodable to text — direct precedent for our summary tokens before `<FORGET>`. RMT (Bulatov et al., NeurIPS 2022) shows models learn to write summary information into special tokens at segment boundaries and read it back — our `<SUMMARY>...<FORGET>` is the within-sequence generalization. ViT Registers (Darcet et al., ICLR 2024) shows transformers spontaneously develop a need for scratch-space tokens and will hijack other positions without designated ones — our management tokens are the controlled version of this. Quest (Tang et al., ICML 2024) segments KV cache into pages and retrieves only top-K per decode step (7× speedup) — synergistic with our approach: inline tokens eliminate dead-end segments permanently, Quest efficiently serves survivors. StreamingLLM (Xiao et al., ICLR 2024) characterizes attention sinks; our `<BOOKMARK>` is a semantically active sink, and the finding that pre-designated sinks are more stable informs management token initialization.
 
 ### 3.16 Process Reward Models — PRM (Lightman et al., ICLR 2024) and PAV (Setlur et al., arXiv 2410)
 
@@ -309,22 +287,6 @@ The policy π_θ is the only parameter; π_ref is frozen. No reward model, no PP
 step_reward = memory_saved(seg_id) × (1 − future_attention_mass_to_evicted_segment)
 ```
 The second factor requires rolling a prover forward from the post-eviction state — exactly PAV's approach. This is expensive but provides superior credit assignment: the model is rewarded not for evicting tokens, but for evicting tokens that it genuinely won't need. PAV's finding that weaker provers suffice means we can use the 7B model itself as the prover for 32B training.
-
----
-
-### 3.17 Quest — Query-Aware Sparse KV Retrieval (Tang et al., ICML 2024)
-
-**Core mechanism:** Segments KV cache into fixed-size pages; stores per-page min/max key statistics. At each decode step, uses the current query vector to estimate each page's criticality via element-wise products with min/max statistics. Loads only top-K pages for full attention. 7.03× overall latency reduction; handles up to 1M token contexts.
-
-**Relevance:** Quest and our approach are synergistic, not competitive. Our inline tokens aggressively evict provably unneeded KV entries; Quest efficiently retrieves the remaining entries per decode step. Combined: (1) inline tokens eliminate dead-end segments permanently, (2) Quest efficiently serves the surviving segments. The composability is architectural: our serving hook runs at eviction time; Quest runs at attention time.
-
----
-
-### 3.18 StreamingLLM / Attention Sinks (Xiao et al., ICLR 2024)
-
-**Core mechanism:** First formal characterization of attention sinks: initial tokens (positions 0–4) consistently receive disproportionate attention regardless of content, because softmax requires sum-to-1 and these tokens serve as a "dump." Fix: retain sink tokens + sliding recent window. Enables stable generation up to 4M tokens.
-
-**Relevance:** Our `<BOOKMARK>` token is an active, semantically meaningful attention sink. StreamingLLM's finding that adding a pre-designated sink token during pre-training makes the role more stable is relevant: if management tokens are added to the vocabulary, initializing them as attention sinks may improve training stability. The attention sink observation also informs what should *not* be `<FORGET>`-ed: initial tokens, like sinks, tend to be important across long contexts.
 
 ---
 
@@ -347,10 +309,6 @@ The second factor requires rolling a prover forward from the post-eviction state
 **Status:** All eviction methods (ThinKV, H2O, Crystal-KV) permanently destroy evicted token information. Retrieval methods (FreeKV, ShadowKV) avoid loss but preserve all tokens in CPU memory. No method allows the model to selectively compress a segment's content into a denser representation before eviction.
 
 **What we close:** `<SUMMARY>...<FORGET>` creates a compact representation of a dead-end segment before eviction. Information from the dead-end that is genuinely useful (e.g., the reason an approach failed) is preserved in summary tokens and remains accessible to subsequent attention. This is strictly superior to pure eviction (which destroys all information) and more efficient than full retrieval (which preserves all information at full cost).
-
-### Gap 4: FlashAttention Compatibility (Distinguishing from the Epiphany-Aware KVC project)
-
-**Note:** The parallel hidden-state-variance project (see `/home/skolawol/workspace/kvcache/`) makes FA2 compatibility a primary argument for avoiding attention-based signals. Our approach has a different but compatible FA2 story: the serving-layer KV eviction triggered by inline tokens operates on the PagedAttention block table (not the attention weight matrix), and does not require materialising the attention matrix. The model's own generation of management tokens happens in the normal autoregressive forward pass — FA2-compatible. The only FA2-incompatible operation is the hindsight labeling pipeline (which needs full attention matrices), but that is offline.
 
 ---
 
@@ -422,8 +380,6 @@ The following are unresolved at the time of writing. Answers will emerge from ex
 5. **Generalization across domains:** The model is trained on math (MATH-500, AIME) and tested on code (LiveCodeBench). Do management token patterns generalize, or is the behavior domain-specific? E5 tests this directly.
 
 6. **Interaction with generation length:** Does the model learn to compress traces (emit management tokens to stay within a target cache budget) or does it maintain trace length and simply manage the cache more efficiently? The ideal outcome is the former. E7.3 analyzes this.
-
-7. **FreeKV citation disambiguation:** The proposal's reference list cites FreeKV as OpenReview ID wXAn7orB1H ("Boosting KV Cache Retrieval"). The publicly accessible FreeKV paper is arXiv:2505.13109 (same title, same core mechanism). Confirm whether these are the same work at different stages of submission before finalizing related work section.
 
 ---
 
