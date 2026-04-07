@@ -4,6 +4,10 @@ __pycache__/
 # Large local datasets
 /data/*.jsonl
 /data/**/*.jsonl
+/data/first_iter/
+
+# Job outputs
+/slurm_logs/
 
 # Virtual environments
 .venv/
