@@ -1,0 +1,10 @@
+__pycache__/
+*.py[cod]
+
+# Large local datasets
+/data/*.jsonl
+/data/**/*.jsonl
+
+# Virtual environments
+.venv/
+venv/
