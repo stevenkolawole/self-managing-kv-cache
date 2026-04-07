@@ -5,6 +5,7 @@ __pycache__/
 /data/*.jsonl
 /data/**/*.jsonl
 /data/first_iter/
+/data/e0_characterization/
 
 # Job outputs
 /slurm_logs/

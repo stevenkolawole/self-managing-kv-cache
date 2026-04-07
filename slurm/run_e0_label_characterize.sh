@@ -6,6 +6,7 @@
 #SBATCH --output=/home/%u/workspace/self_managing_kvc/slurm_logs/e0_label_characterize_%j.out
 #SBATCH --error=/home/%u/workspace/self_managing_kvc/slurm_logs/e0_label_characterize_%j.err
 #SBATCH --gres=gpu:2
+#SBATCH --constraint=A100_80GB|H100|H200|RTX_PRO_6000
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=4
 #SBATCH --mem-per-gpu=40G

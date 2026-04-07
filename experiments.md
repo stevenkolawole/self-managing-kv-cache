@@ -18,7 +18,7 @@
 | P1 | Segment ID scheme — define how segments are delimited and referenced by ID in inline tokens | `[ ]` | Options: sequential numbering, marker-indexed, fixed-size windows |
 | P2 | Serving hook — vLLM/SGLang modification that intercepts `<FORGET id>` / summary tokens mid-decode and executes PagedAttention block eviction | `[ ]` | Reference: ThinKV CT kernel, SideQuest SGLang cursor eviction |
 | P3 | KV cache simulator for training — lightweight simulator tracking which blocks are evicted during GRPO rollouts so model experiences its own decisions | `[ ]` | Closes training/inference mismatch; needed before E4 |
-| P4 | Hindsight labeling script — automated pipeline for steps E2.1–E2.5 | `[ ]` | Prerequisite for E2 |
+| P4 | Hindsight labeling script — automated pipeline for steps E2.1–E2.5 | `[x]` | `scripts/label_attention.py` — eager forward pass with hooks, populates dead_end_flags |
 | P5 | Eval harness — unified runner for all benchmarks + metrics (peak KV MB, TPOT, accuracy, useful retention rate) | `[ ]` | Needed before E5 |
 
 ---
@@ -31,16 +31,22 @@
 
 | # | Task | Status | Notes |
 |---|------|--------|-------|
-| E0.1 | Collect ~1K completed reasoning traces from 7B on MATH-500 + AIME | `[ ]` | |
-| E0.2 | Curate self-correction marker vocabulary ("Wait", "Actually", "Let me reconsider", "Hmm", "That's wrong", etc.) and measure coverage | `[ ]` | |
-| E0.3 | Measure distribution of dead-end segment lengths (tokens preceding each self-correction marker): mean, median, p95, max | `[ ]` | Key motivation figure |
-| E0.4 | Compute attention mass from all post-marker tokens to each pre-marker segment (avg across layers/heads); plot distribution | `[ ]` | Determines labeling threshold for E2 |
+| E0.1 | Collect ~1K completed reasoning traces from 7B on MATH-500 + AIME | `[~]` | 100 traces collected (from kvcache project, MATH-500 only); AIME + scale-up pending |
+| E0.2 | Curate self-correction marker vocabulary ("Wait", "Actually", "Let me reconsider", "Hmm", "That's wrong", etc.) and measure coverage | `[x]` | Vocabulary in `src/segments.py`; 51.3 markers/trace mean confirms strong coverage |
+| E0.3 | Measure distribution of dead-end segment lengths (tokens preceding each self-correction marker): mean, median, p95, max | `[x]` | Segment len median 253 chars; figures in `data/e0_characterization/figures/` |
+| E0.4 | Compute attention mass from all post-marker tokens to each pre-marker segment (avg across layers/heads); plot distribution | `[x]` | `scripts/label_attention.py` done; threshold 0.05 confirmed; 79/100 labeled (21 OOM on longest traces, need Blackwell node) |
 | E0.5 | Measure KV cache growth curve over generation length; identify inflection points at phase transitions | `[ ]` | |
-| E0.6 | Measure token repetition rates per trace (reproduce R-KV's 8–14× trace inflation claim on Qwen-7B distill) | `[ ]` | |
-| E0.7 | Correlate self-correction markers with ThinKV's Transition-type attention sparsity pattern | `[ ]` | Validates hindsight labeling proxy |
-| E0.8 | Summarize findings into motivation figures for paper | `[ ]` | |
+| E0.6 | Measure token repetition rates per trace (reproduce R-KV's 8–14× trace inflation claim on Qwen-7B distill) | `[x]` | 45.4% bigram repetition — corroborates R-KV; gen tokens median 2074 |
+| E0.7 | Correlate self-correction markers with ThinKV's Transition-type attention sparsity pattern | `[ ]` | |
+| E0.8 | Summarize findings into motivation figures for paper | `[~]` | Histograms generated; need paper-quality pass |
 
-**Key output:** Dead-end statistics table, KV growth curves, attention-mass threshold for E2.
+**Key output (2026-04-07, MATH-500 100 traces):**
+- Dead-end fraction: **79% mean** (79/100 traces labeled; best run on RTX PRO 6000 Blackwell 95GB)
+- Self-correction markers: **51.3/trace mean** — dense labeling signal
+- Bigram repetition: **45.4%** — corroborates R-KV trace inflation
+- Segment length: **253 chars median**
+- Gen tokens: **2074 median**
+- Attention-mass threshold for E2: **0.05**
 
 ---
 
@@ -52,10 +58,10 @@
 
 | # | Task | Status | Notes |
 |---|------|--------|-------|
-| E1.1 | Design 4–5 system prompt variants ranging from minimal to elaborate instruction | `[ ]` | e.g., minimal: "mark dead branches with `<FORGET>`"; elaborate: includes segment ID scheme + worked examples |
-| E1.2 | Run prompts on 7B — measure emission rate, structural validity, accuracy delta | `[ ]` | |
-| E1.3 | Run prompts on 32B — same metrics; check if scale provides zero-shot capability | `[ ]` | |
-| E1.4 | Score precision and recall of emitted tokens vs. E0 hindsight labels | `[ ]` | Requires E0 to be done first |
+| E1.1 | Design 4–5 system prompt variants ranging from minimal to elaborate instruction | `[x]` | V1 minimal, V2 typed, V3 procedural, V4 segment-aware, V5 few-shot — in `scripts/elicit_zero_shot.py` |
+| E1.2 | Run prompts on 7B — measure emission rate, structural validity, accuracy delta | `[~]` | Running: `slurm/run_e1_7b.sh` (array job, 5 variants) → `data/e1/v{1-5}_7b.jsonl` |
+| E1.3 | Run prompts on 32B — same metrics; check if scale provides zero-shot capability | `[~]` | Running: `slurm/run_e1_32b.sh` (array job, 5 variants) → `data/e1/v{1-5}_32b.jsonl` |
+| E1.4 | Score precision and recall of emitted tokens vs. E0 hindsight labels | `[ ]` | Requires E1.2/E1.3 output |
 | E1.5 | Qualitative analysis: examples of good/bad/hallucinated token placement | `[ ]` | |
 | E1.6 | Write up zero-shot baseline numbers for paper | `[ ]` | |
 
