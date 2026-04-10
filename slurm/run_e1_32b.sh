@@ -1,11 +1,9 @@
 #!/bin/bash
 #SBATCH --job-name=smkvc_e1_32b
-#SBATCH --partition=preempt
-#SBATCH --requeue
-#SBATCH --signal=B:USR1@60
+#SBATCH --partition=general
 #SBATCH --output=/home/%u/workspace/self_managing_kvc/slurm_logs/e1_32b_v%a_%j.out
 #SBATCH --error=/home/%u/workspace/self_managing_kvc/slurm_logs/e1_32b_v%a_%j.err
-#SBATCH --array=1-5
+#SBATCH --array=6,7,8,9
 #SBATCH --gres=gpu:2
 #SBATCH --constraint=A100_80GB|H100|H200|RTX_PRO_6000
 #SBATCH --ntasks-per-node=1
@@ -28,11 +26,12 @@ export TRANSFORMERS_CACHE=/data/hf_cache/skolawol
 export PYTORCH_ALLOC_CONF=expandable_segments:True
 
 WORKDIR=/home/skolawol/workspace/self_managing_kvc
+DATADIR=/data/user_data/skolawol/self_managing_kvc
 cd "$WORKDIR"
-mkdir -p slurm_logs data/e1
+mkdir -p slurm_logs "$DATADIR/data/e1"
 
 V=$SLURM_ARRAY_TASK_ID
-OUTPUT=data/e1/v${V}_32b.jsonl
+OUTPUT=$DATADIR/data/e1/v${V}_32b.jsonl
 
 echo "=========================================="
 echo "E1 — zero-shot elicitation | 32B | variant $V"

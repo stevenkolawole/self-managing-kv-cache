@@ -34,12 +34,13 @@ export HF_DATASETS_CACHE=/data/hf_cache/skolawol/datasets
 export TRANSFORMERS_CACHE=/data/hf_cache/skolawol
 
 WORKDIR=/home/skolawol/workspace/self_managing_kvc
+DATADIR=/data/user_data/skolawol/self_managing_kvc
 cd "$WORKDIR"
-mkdir -p slurm_logs data
+mkdir -p slurm_logs "$DATADIR/data"
 
-ANNOTATED=data/math500_annotated.jsonl
-LABELED=data/math500_labeled.jsonl
-OUTDIR=data/e0_characterization
+ANNOTATED=$DATADIR/data/math500_annotated.jsonl
+LABELED=$DATADIR/data/math500_labeled.jsonl
+OUTDIR=$DATADIR/data/e0_characterization
 
 echo "=========================================="
 echo "E0 — label_attention + characterize"
