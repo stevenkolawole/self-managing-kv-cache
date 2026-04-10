@@ -58,14 +58,21 @@
 
 | # | Task | Status | Notes |
 |---|------|--------|-------|
-| E1.1 | Design 4–5 system prompt variants ranging from minimal to elaborate instruction | `[x]` | V1 minimal, V2 typed, V3 procedural, V4 segment-aware, V5 few-shot — in `scripts/elicit_zero_shot.py` |
-| E1.2 | Run prompts on 7B — measure emission rate, structural validity, accuracy delta | `[~]` | Running: `slurm/run_e1_7b.sh` (array job, 5 variants) → `data/e1/v{1-5}_7b.jsonl` |
-| E1.3 | Run prompts on 32B — same metrics; check if scale provides zero-shot capability | `[~]` | Running: `slurm/run_e1_32b.sh` (array job, 5 variants) → `data/e1/v{1-5}_32b.jsonl` |
-| E1.4 | Score precision and recall of emitted tokens vs. E0 hindsight labels | `[ ]` | Requires E1.2/E1.3 output |
-| E1.5 | Qualitative analysis: examples of good/bad/hallucinated token placement | `[ ]` | |
+| E1.1 | Design prompt variants ranging from minimal to elaborate instruction | `[x]` | V1–V5 baseline/ablation (output-framing, largely ineffective); V6–V9 improved (reasoning-internal framing: rich_few_shot, identity, output_primed, recency_suffix) — in `scripts/elicit_zero_shot.py` |
+| E1.2 | Run prompts on 7B — measure emission rate, structural validity, accuracy delta | `[x]` | Done: V1,6,7,8,9 — all 0% emission; V8 70% acc, V1/V9 71% |
+| E1.3 | Run prompts on 32B — same metrics; check if scale provides zero-shot capability | `[x]` | Done: V8 best — 9% FORGET emission, 73% acc (above V1 baseline). V6/V7 hurt accuracy. |
+| E1.4 | Score precision and recall of emitted tokens vs. E0 hindsight labels | `[ ]` | Requires E1.2/E1.3 output; focus on V8 32B (only variant with real emission) |
+| E1.5 | Qualitative analysis: examples of good/bad/hallucinated token placement | `[x]` | Done: 5 behavioral patterns identified across 9 V8 32B emitting traces — see `analysis.md`. Only 1/9 traces shows target behavior (approach-switch FORGET); 8/9 show wrong-intent patterns (post-hoc bulk erasure, verification loops, self-doubt). SFT data must filter to approach-switch only. |
 | E1.6 | Write up zero-shot baseline numbers for paper | `[ ]` | |
 
-**Key output:** Zero-shot precision/recall; motivates fine-tuning approach.
+**Key output (2026-04-09, all variants complete):**
+- V8 (output_primed) 32B: **9% FORGET emission, 73% acc** — only variant with meaningful emission AND accuracy gain.
+- V8 qualitatively correct: proper segment tracking, FORGET at genuine dead-ends (see `analysis.md` trace_082).
+- V6/V7 hurt 32B accuracy: −26pp and −21pp vs. V1. Long prompts disrupt chain-of-thought.
+- 7B: 0 emissions across all variants. Fine-tuning required.
+- Gap to close: 79% hindsight dead-end rate vs. 9% zero-shot emission → ~70pp.
+
+**Next:** E1.4 precision/recall of V8 32B emissions vs. E0 hindsight labels.
 
 ---
 
@@ -78,7 +85,7 @@
 |---|------|--------|-------|
 | E2.1 | Collect ~10K–20K reasoning traces from 7B on MATH-500 + GSM8K train splits | `[ ]` | |
 | E2.2 | Run self-correction marker detection on all traces | `[ ]` | Using vocabulary from E0.2 |
-| E2.3 | Define segment boundaries (marker-to-marker); apply attention-mass threshold from E0.4 to label dead-end segments | `[ ]` | Key design decision: which layers/heads to use for attention computation |
+| E2.3 | Define segment boundaries (marker-to-marker); apply attention-mass threshold from E0.4 to label dead-end segments | `[ ]` | Key design decision: which layers/heads to use. E1 qualitative analysis confirms FORGET must fire mid-reasoning at approach switches — not post-hoc, not on self-doubt. Hindsight labels provide ground truth for filtering. |
 | E2.4 | Generate 2–4 summary tokens per dead-end segment (using 7B or stronger annotator) | `[ ]` | Ablated in E6d; investigate using stronger annotator vs. self-annotation |
 | E2.5 | Construct preferred traces (management tokens inserted) vs. rejected traces (raw) | `[ ]` | Preferred: `<FORGET id>` + summary tokens at each dead-end; rejected: unmodified |
 | E2.6 | Compute dataset statistics: how many management tokens per trace on average, segment length distribution, summary token quality (spot check) | `[ ]` | |
