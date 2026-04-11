@@ -1,0 +1,637 @@
+Source: e2_32b
+Variant: 0 (bare)
+Correct: True
+Tokens: FORGET=0 SUMMARY=0 BOOKMARK=0
+
+Problem:
+Let $ABC$ be a triangle inscribed in circle $\omega$. Let the tangents to $\omega$ at $B$ and $C$ intersect at point $D$, and let $\overline{AD}$ intersect $\omega$ at $P$. If $AB=5$, $BC=9$, and $AC=10$, $AP$ can be written as the form $\frac{m}{n}$, where $m$ and $n$ are relatively prime integers. Find $m + n$.
+
+Ground Truth:
+113
+
+Generated Trace:
+Okay, so I have this geometry problem here. Let me try to parse it step by step. 
+
+We have triangle ABC inscribed in a circle ω. The tangents to ω at points B and C intersect at point D. Then, the line AD intersects ω again at point P. We are given the lengths of the sides: AB is 5, BC is 9, and AC is 10. We need to find the length of AP, express it as a reduced fraction m/n, and then find m + n.
+
+Alright, so first, let me visualize the problem. Triangle ABC with sides AB=5, BC=9, AC=10. So, it's a scalene triangle. The circle ω is the circumcircle of triangle ABC. The tangents at B and C meet at D, so D is the ex-tangent point opposite to A, I think. Then, connecting A to D, which is outside the circle, and this line intersects the circle again at P. So, AP is a chord of the circle passing through A and P, with P being the second intersection point.
+
+I need to find the length of AP. Hmm. So, perhaps I can use some properties of power of a point, or maybe some similar triangles, or perhaps harmonic division? Let me think.
+
+First, since D is the intersection of the tangents at B and C, D is the ex-tangent point, so it's the ex-similicenter of the circumcircle. Wait, actually, the point where two tangents meet is called the ex-tangent point, and it has some properties related to the power of the point.
+
+Power of point D with respect to ω: since D lies on the tangents at B and C, the power of D is equal to DB² = DC². So, DB = DC. That might be useful.
+
+Also, since AD intersects ω again at P, by the power of point A with respect to ω, we have that AP * AD = power of A. But wait, A is on ω, so the power of A is zero. Hmm, that might not help directly.
+
+Wait, no. The power of point D with respect to ω is DB² = DC², which is equal to DP * DA, since D lies outside the circle and AD is a secant. So, DP * DA = DB².
+
+So, if I can find DB, then I can relate DP and DA. Then, since AP = AD - DP, perhaps I can express AP in terms of AD and DP.
+
+Alternatively, maybe I can use inversion or some other projective geometry techniques, but that might be overcomplicating.
+
+Alternatively, maybe using coordinates or trigonometry. Let me see.
+
+First, perhaps I can compute some lengths in triangle ABC. Let me compute the semi-perimeter, area, circumradius, etc.
+
+Given sides AB=5, BC=9, AC=10. Let me compute the semi-perimeter: s = (5 + 9 + 10)/2 = 24/2 = 12.
+
+Then, using Heron's formula, the area is sqrt[s(s - AB)(s - BC)(s - AC)] = sqrt[12*(12 - 5)*(12 - 9)*(12 - 10)] = sqrt[12*7*3*2] = sqrt[504] = sqrt[16*31.5] Wait, 504 factors: 504 = 16 * 31.5? Wait, 504 divided by 16 is 31.5, which is not integer. Wait, maybe factor it differently.
+
+504 = 16 * 31.5? Wait, 504 divided by 16 is 31.5, which is 63/2. Hmm, maybe not helpful. Alternatively, 504 = 9 * 56 = 9 * 7 * 8. So, sqrt[504] = sqrt[9*56] = 3*sqrt[56] = 3*sqrt[4*14] = 3*2*sqrt[14] = 6*sqrt[14]. So, area is 6√14.
+
+Then, the circumradius R can be found using the formula:
+
+R = (a*b*c)/(4*Area) = (5*9*10)/(4*6√14) = (450)/(24√14) = (75)/(4√14). Rationalizing the denominator: (75√14)/(4*14) = (75√14)/56.
+
+So, R = 75√14 / 56.
+
+Hmm, okay. So, the circumradius is 75√14 / 56.
+
+Now, perhaps I can find the length of DB. Since D is the ex-tangent point, the distance from D to B and D to C is equal, as DB = DC.
+
+Also, in triangle ABC, the ex-tangent point D is the center of the A-excircle? Wait, no, the ex-tangent point is different. Wait, actually, the ex-tangent point is the intersection of the external angle bisectors. Hmm, maybe not.
+
+Wait, actually, D is the ex-tangent point, so it's the ex-similicenter of the circumcircle. So, the ex-similicenter lies on the external angle bisector of angle A and the internal angle bisectors of angles B and C.
+
+Alternatively, perhaps I can use coordinates. Let me try to set up coordinate system.
+
+Let me place triangle ABC in coordinate plane. Let me set point B at (0,0), point C at (9,0), since BC=9. Then, point A is somewhere in the plane. Given AB=5 and AC=10, so coordinates of A can be found.
+
+Let me denote coordinates: Let’s set B at (0,0), C at (9,0). Let’s denote A as (x,y). Then, distance from A to B is 5: sqrt[(x)^2 + (y)^2] = 5, so x² + y² = 25.
+
+Distance from A to C is 10: sqrt[(x - 9)^2 + y²] = 10, so (x - 9)^2 + y² = 100.
+
+Subtracting the first equation from the second: (x - 9)^2 + y² - (x² + y²) = 100 - 25 => x² - 18x + 81 + y² - x² - y² = 75 => -18x + 81 = 75 => -18x = -6 => x = 1/3.
+
+So, x = 1/3. Then, from x² + y² = 25: (1/3)^2 + y² = 25 => 1/9 + y² = 25 => y² = 25 - 1/9 = 224/9 => y = sqrt(224)/3 = (4*sqrt(14))/3.
+
+So, coordinates of A are (1/3, 4√14/3).
+
+Alright, so now we have coordinates for A, B, C.
+
+Now, we need to find point D, which is the intersection of the tangents at B and C to the circumcircle ω.
+
+First, let me find the equation of the circumcircle ω. Since we have coordinates for A, B, C, we can find the equation.
+
+General equation of a circle: x² + y² + Dx + Ey + F = 0.
+
+Plugging in points B(0,0): 0 + 0 + 0 + 0 + F = 0 => F = 0.
+
+So, equation becomes x² + y² + Dx + Ey = 0.
+
+Plugging in point C(9,0): 81 + 0 + 9D + 0 = 0 => 81 + 9D = 0 => D = -9.
+
+Plugging in point A(1/3, 4√14/3): (1/3)^2 + (4√14/3)^2 + D*(1/3) + E*(4√14/3) = 0.
+
+Compute each term:
+
+(1/3)^2 = 1/9.
+
+(4√14/3)^2 = (16*14)/9 = 224/9.
+
+D*(1/3) = (-9)*(1/3) = -3.
+
+E*(4√14/3) = (4√14/3)*E.
+
+So, adding up: 1/9 + 224/9 - 3 + (4√14/3)E = 0.
+
+Compute 1/9 + 224/9 = 225/9 = 25.
+
+So, 25 - 3 + (4√14/3)E = 0 => 22 + (4√14/3)E = 0 => (4√14/3)E = -22 => E = (-22)*(3)/(4√14) = (-66)/(4√14) = (-33)/(2√14).
+
+Rationalizing the denominator: (-33√14)/(2*14) = (-33√14)/28.
+
+So, E = -33√14 / 28.
+
+Therefore, the equation of the circumcircle ω is x² + y² - 9x - (33√14 / 28)y = 0.
+
+Alternatively, we can write it in standard form by completing the squares.
+
+But maybe it's easier to find the equations of the tangents at B and C.
+
+The tangent at a point on a circle can be found using the formula: for a circle x² + y² + Dx + Ey + F = 0, the tangent at point (x1, y1) is xx1 + yy1 + D(x + x1)/2 + E(y + y1)/2 + F = 0.
+
+Wait, actually, the equation of the tangent at (x1, y1) is:
+
+x*x1 + y*y1 + D*(x + x1)/2 + E*(y + y1)/2 + F = 0.
+
+But since F = 0 in our case, it simplifies.
+
+So, for point B(0,0): tangent equation is x*0 + y*0 + D*(x + 0)/2 + E*(y + 0)/2 + 0 = 0 => (D/2)x + (E/2)y = 0.
+
+Given D = -9, E = -33√14 / 28.
+
+So, tangent at B: (-9/2)x + (-33√14 / 56)y = 0.
+
+Wait, let me compute E/2: (-33√14 / 28)/2 = (-33√14)/56.
+
+So, tangent at B: (-9/2)x + (-33√14 / 56)y = 0.
+
+Similarly, tangent at C(9,0): x*9 + y*0 + D*(x + 9)/2 + E*(y + 0)/2 + 0 = 0.
+
+So, 9x + D*(x + 9)/2 + E*y/2 = 0.
+
+Plugging D = -9, E = -33√14 / 28:
+
+9x + (-9/2)(x + 9) + (-33√14 / 56)y = 0.
+
+Let me compute each term:
+
+9x - (9/2)x - (81/2) + (-33√14 / 56)y = 0.
+
+Combine like terms:
+
+(9 - 9/2)x - 81/2 + (-33√14 / 56)y = 0 => (9/2)x - 81/2 + (-33√14 / 56)y = 0.
+
+Multiply both sides by 2 to eliminate denominators:
+
+9x - 81 + (-33√14 / 28)y = 0.
+
+So, tangent at C: 9x - (33√14 / 28)y - 81 = 0.
+
+So, now we have equations of the two tangents:
+
+Tangent at B: (-9/2)x + (-33√14 / 56)y = 0.
+
+Tangent at C: 9x - (33√14 / 28)y - 81 = 0.
+
+We need to find their intersection point D.
+
+Let me write the equations more clearly:
+
+1) (-9/2)x - (33√14 / 56)y = 0.
+
+2) 9x - (33√14 / 28)y = 81.
+
+Let me solve these two equations.
+
+First, equation 1: Let's multiply both sides by 56 to eliminate denominators:
+
+56*(-9/2)x + 56*(-33√14 / 56)y = 0 => (-252)x - 33√14 y = 0.
+
+Equation 2: Multiply both sides by 28:
+
+28*9x - 28*(33√14 / 28)y = 28*81 => 252x - 33√14 y = 2268.
+
+So now, we have:
+
+Equation 1: -252x - 33√14 y = 0.
+
+Equation 2: 252x - 33√14 y = 2268.
+
+Let me add equation 1 and equation 2:
+
+(-252x + 252x) + (-33√14 y - 33√14 y) = 0 + 2268 => 0 - 66√14 y = 2268 => -66√14 y = 2268.
+
+Solving for y:
+
+y = 2268 / (-66√14) = -2268 / (66√14).
+
+Simplify numerator and denominator:
+
+2268 ÷ 6 = 378, 66 ÷ 6 = 11. So, 378 / 11√14.
+
+Wait, 2268 ÷ 66: 2268 ÷ 6 = 378, 378 ÷ 11 = 34.3636... Hmm, maybe factor 2268 and 66.
+
+2268: Let's factor 2268.
+
+2268 ÷ 2 = 1134
+
+1134 ÷ 2 = 567
+
+567 ÷ 3 = 189
+
+189 ÷ 3 = 63
+
+63 ÷ 3 = 21
+
+21 ÷ 3 = 7
+
+So, 2268 = 2² * 3⁴ * 7.
+
+66 = 2 * 3 * 11.
+
+So, GCD of 2268 and 66: factors common are 2 and 3, so GCD is 6.
+
+Thus, 2268 / 66 = (2268 ÷ 6)/(66 ÷ 6) = 378 / 11.
+
+So, y = -378 / (11√14).
+
+Rationalizing the denominator:
+
+y = -378√14 / (11*14) = -378√14 / 154.
+
+Simplify 378 and 154: 378 ÷ 14 = 27, 154 ÷14=11.
+
+So, y = -27√14 / 11.
+
+So, y-coordinate of D is -27√14 / 11.
+
+Now, plug y back into equation 1 to find x.
+
+Equation 1: -252x - 33√14 y = 0.
+
+Plug y = -27√14 / 11:
+
+-252x - 33√14*(-27√14 / 11) = 0.
+
+Compute the second term:
+
+-33√14*(-27√14 / 11) = (33*27)*(√14*√14)/11 = (33*27*14)/11.
+
+Simplify:
+
+33/11 = 3, so 3*27*14 = 81*14 = 1134.
+
+So, equation becomes:
+
+-252x + 1134 = 0 => -252x = -1134 => x = (-1134)/(-252) = 1134 / 252.
+
+Simplify:
+
+1134 ÷ 42 = 27, 252 ÷42=6. So, 27/6 = 9/2.
+
+So, x = 9/2.
+
+Therefore, point D has coordinates (9/2, -27√14 / 11).
+
+Alright, so D is at (4.5, -27√14 / 11).
+
+Now, we need to find the equation of line AD, which connects point A(1/3, 4√14 / 3) and D(9/2, -27√14 / 11).
+
+First, let me compute the slope of AD.
+
+Slope m = [y_D - y_A] / [x_D - x_A] = [(-27√14 / 11) - (4√14 / 3)] / [9/2 - 1/3].
+
+Compute numerator:
+
+Convert to common denominator, which is 33.
+
+-27√14 / 11 = (-81√14)/33
+
+4√14 / 3 = (44√14)/33
+
+So, numerator: (-81√14 - 44√14)/33 = (-125√14)/33.
+
+Denominator:
+
+9/2 - 1/3 = (27/6 - 2/6) = 25/6.
+
+So, slope m = (-125√14 / 33) / (25/6) = (-125√14 / 33) * (6/25) = (-125*6√14)/(33*25).
+
+Simplify:
+
+125 and 25: 125 ÷25=5, 25 ÷25=1.
+
+6 and 33: 6 ÷3=2, 33 ÷3=11.
+
+So, m = (-5*2√14)/(11*1) = (-10√14)/11.
+
+So, slope of AD is -10√14 / 11.
+
+Now, equation of AD: using point A(1/3, 4√14 / 3).
+
+y - 4√14 / 3 = (-10√14 / 11)(x - 1/3).
+
+We can write this as:
+
+y = (-10√14 / 11)x + (10√14 / 11)*(1/3) + 4√14 / 3.
+
+Compute the constants:
+
+(10√14 / 11)*(1/3) = 10√14 / 33.
+
+4√14 / 3 = 44√14 / 33.
+
+So, adding them: 10√14 / 33 + 44√14 / 33 = 54√14 / 33 = 18√14 / 11.
+
+Thus, equation of AD: y = (-10√14 / 11)x + 18√14 / 11.
+
+Now, we need to find the other intersection point P of line AD with the circumcircle ω.
+
+We already have the equation of ω: x² + y² - 9x - (33√14 / 28)y = 0.
+
+We can substitute y from the equation of AD into the circle equation.
+
+So, substitute y = (-10√14 / 11)x + 18√14 / 11 into ω's equation.
+
+Let me denote y = m x + c, where m = -10√14 / 11, c = 18√14 / 11.
+
+So, plug into ω:
+
+x² + (m x + c)^2 - 9x - (33√14 / 28)(m x + c) = 0.
+
+Let me compute each term step by step.
+
+First, expand (m x + c)^2:
+
+= m²x² + 2mc x + c².
+
+So, x² + m²x² + 2mc x + c² - 9x - (33√14 / 28)(m x + c) = 0.
+
+Combine like terms:
+
+(1 + m²)x² + (2mc - 9 - (33√14 / 28)m)x + (c² - (33√14 / 28)c) = 0.
+
+This is a quadratic in x. Since we know that point A is on both AD and ω, one solution is x = 1/3. The other solution will correspond to point P.
+
+So, let me compute the coefficients:
+
+First, compute 1 + m²:
+
+m = -10√14 / 11, so m² = (100*14)/121 = 1400 / 121.
+
+Thus, 1 + m² = 1 + 1400/121 = (121 + 1400)/121 = 1521 / 121.
+
+Next, compute 2mc - 9 - (33√14 / 28)m:
+
+First, compute 2mc:
+
+2 * (-10√14 / 11) * (18√14 / 11) = 2 * (-10*18)*(√14*√14)/(11*11) = 2*(-180)*(14)/121 = (-360*14)/121 = (-5040)/121.
+
+Then, compute -9: -9.
+
+Compute -(33√14 / 28)m:
+
+= -(33√14 / 28)*(-10√14 / 11) = (33*10)*(√14*√14)/(28*11) = (330)*(14)/(308).
+
+Simplify:
+
+330/308 = 165/154 = 15/14 (divided numerator and denominator by 11).
+
+So, 15/14 *14 = 15.
+
+Wait, let me compute step by step:
+
+(33√14 / 28)*(-10√14 / 11) = (33*(-10))*(√14*√14)/(28*11) = (-330)*(14)/(308).
+
+Simplify numerator and denominator:
+
+-330/308 = -165/154 = -15/14.
+
+14/14 = 1.
+
+So, total is (-15/14)*14 = -15.
+
+But since it's negative of that, it's +15.
+
+Wait, let me re-express:
+
+(33√14 / 28)*(-10√14 / 11) = (33*(-10))*(√14*√14)/(28*11) = (-330)*(14)/(308).
+
+Simplify:
+
+-330/308 = -165/154 = -15/14.
+
+14/14 = 1.
+
+So, total is (-15/14)*14 = -15.
+
+But since it's -(33√14 / 28)*m, which is -(-15) = +15.
+
+Wait, no. Wait, the term is -(33√14 / 28)*m.
+
+Since m is negative, so:
+
+-(33√14 / 28)*(-10√14 / 11) = (33*10)*(√14*√14)/(28*11) = (330)*(14)/(308).
+
+Simplify:
+
+330/308 = 165/154 = 15/14.
+
+14/14 = 1.
+
+So, total is (15/14)*14 = 15.
+
+So, the term is +15.
+
+So, putting it all together:
+
+2mc - 9 - (33√14 / 28)m = (-5040/121) - 9 + 15.
+
+Convert all terms to over 121 denominator:
+
+-5040/121 - 9*(121/121) + 15*(121/121) = (-5040 - 1089 + 1815)/121.
+
+Compute numerator:
+
+-5040 -1089 = -6129; -6129 + 1815 = -4314.
+
+So, the coefficient is -4314 / 121.
+
+Now, compute c² - (33√14 / 28)c:
+
+c = 18√14 / 11.
+
+c² = (18√14 / 11)^2 = (324*14)/121 = 4536 / 121.
+
+(33√14 / 28)c = (33√14 / 28)*(18√14 / 11) = (33*18)*(√14*√14)/(28*11) = (594)*(14)/(308).
+
+Simplify:
+
+594/308 = 297/154 = 27/14.
+
+14/14 = 1.
+
+So, (33√14 / 28)c = 27/14 *14 = 27.
+
+Thus, c² - (33√14 / 28)c = 4536 / 121 - 27.
+
+Convert 27 to 27*121/121 = 3267 / 121.
+
+So, 4536 / 121 - 3267 / 121 = (4536 - 3267)/121 = 1269 / 121.
+
+So, putting it all together, the quadratic equation is:
+
+(1521 / 121)x² + (-4314 / 121)x + 1269 / 121 = 0.
+
+Multiply both sides by 121 to eliminate denominators:
+
+1521x² - 4314x + 1269 = 0.
+
+Simplify the equation:
+
+1521x² - 4314x + 1269 = 0.
+
+Let me see if I can factor this or use quadratic formula.
+
+First, let's see if the equation can be simplified by dividing by a common factor.
+
+Check GCD of 1521, 4314, 1269.
+
+1521: factors are 39² = 1521, so 3²*13².
+
+4314: 4314 ÷ 2 = 2157; 2157 ÷ 3 = 719. 719 is prime.
+
+1269: 1269 ÷ 3 = 423; 423 ÷ 3 = 141; 141 ÷ 3 = 47. So, 1269 = 3³*47.
+
+So, common factors: 3.
+
+Divide equation by 3:
+
+507x² - 1438x + 423 = 0.
+
+Wait, 1521 ÷3=507, 4314 ÷3=1438, 1269 ÷3=423.
+
+Now, check if 507, 1438, 423 have common factors.
+
+507: 507 ÷3=169=13².
+
+1438: 1438 ÷2=719, which is prime.
+
+423: 423 ÷3=141 ÷3=47. So, 423=3²*47.
+
+So, no common factors. So, quadratic is 507x² -1438x +423=0.
+
+Use quadratic formula:
+
+x = [1438 ± sqrt(1438² - 4*507*423)] / (2*507).
+
+Compute discriminant D:
+
+1438² = let's compute 1400² + 2*1400*38 + 38² = 1,960,000 + 106,400 + 1,444 = 2,067,844.
+
+4*507*423: 4*507=2028; 2028*423.
+
+Compute 2028*400=811,200; 2028*23=46,644. So, total 811,200 +46,644=857,844.
+
+Thus, D = 2,067,844 - 857,844 = 1,210,000.
+
+sqrt(D) = sqrt(1,210,000) = 1100.
+
+So, x = [1438 ±1100]/(2*507).
+
+Compute both solutions:
+
+First solution: (1438 + 1100)/1014 = 2538 / 1014.
+
+Simplify: 2538 ÷6=423, 1014 ÷6=169. So, 423/169.
+
+Second solution: (1438 - 1100)/1014 = 338 / 1014.
+
+Simplify: 338 ÷26=13, 1014 ÷26=39. So, 13/39 = 1/3.
+
+So, x = 423/169 and x = 1/3.
+
+We already know that x=1/3 corresponds to point A, so the other intersection point P is at x=423/169.
+
+Now, compute y-coordinate of P using equation of AD: y = (-10√14 / 11)x + 18√14 / 11.
+
+Plug x=423/169:
+
+y = (-10√14 / 11)*(423/169) + 18√14 / 11.
+
+Compute each term:
+
+First term: (-10*423√14)/(11*169) = (-4230√14)/(1859).
+
+Second term: 18√14 / 11 = (18*169√14)/(11*169) = (3042√14)/1859.
+
+So, y = (-4230√14 + 3042√14)/1859 = (-1188√14)/1859.
+
+Simplify:
+
+-1188 and 1859: Let's see if they have common factors.
+
+1188 ÷ 4=297, 1859 ÷4 is not integer.
+
+1188 ÷ 3=396, 1859 ÷3=619.666, not integer.
+
+1188 ÷ 11=108, 1859 ÷11=169. So, 1188=11*108, 1859=11*169.
+
+So, factor out 11:
+
+-1188√14 /1859 = -11*108√14 / (11*169) = -108√14 /169.
+
+Thus, y = -108√14 /169.
+
+So, coordinates of P are (423/169, -108√14 /169).
+
+Now, we need to compute the distance AP.
+
+Point A is at (1/3, 4√14 /3), point P is at (423/169, -108√14 /169).
+
+Compute the differences:
+
+Δx = 423/169 - 1/3 = (423*3 - 169)/ (169*3) = (1269 - 169)/507 = 1100 /507.
+
+Δy = (-108√14 /169) - (4√14 /3) = (-108√14 /169 - 4√14 /3).
+
+Convert to common denominator, which is 507.
+
+-108√14 /169 = (-108*3√14)/507 = (-324√14)/507.
+
+4√14 /3 = (4*169√14)/507 = (676√14)/507.
+
+So, Δy = (-324√14 - 676√14)/507 = (-1000√14)/507.
+
+Thus, AP = sqrt[(1100/507)^2 + (-1000√14 /507)^2].
+
+Factor out 1/507:
+
+AP = (1/507) * sqrt[1100² + (1000√14)^2].
+
+Compute inside the sqrt:
+
+1100² = 1,210,000.
+
+(1000√14)^2 = 1,000,000*14 = 14,000,000.
+
+So, total inside sqrt: 1,210,000 +14,000,000 =15,210,000.
+
+sqrt(15,210,000) = sqrt(15,210,000) = 3900.
+
+Because 3900² = (4000 - 100)² = 16,000,000 - 800,000 + 10,000 = 15,210,000.
+
+So, AP = (3900)/507.
+
+Simplify 3900 /507.
+
+Divide numerator and denominator by 3: 3900 ÷3=1300, 507 ÷3=169.
+
+So, 1300 /169.
+
+Check if 1300 and 169 have common factors. 169 is 13², 1300 ÷13=100. So, 1300=13*100, 169=13².
+
+Thus, 1300 /169 = (13*100)/(13²) = 100 /13.
+
+So, AP = 100/13.
+
+Thus, m=100, n=13, which are coprime. So, m +n=113.
+
+**Final Answer**
+\boxed{113}
+</think>
+
+Given triangle \(ABC\) with sides \(AB = 5\), \(BC = 9\), and \(AC = 10\), we need to find the length of \(AP\) where \(P\) is the second intersection point of line \(AD\) with the circumcircle \(\omega\) of \(ABC\). The tangents to \(\omega\) at \(B\) and \(C\) intersect at point \(D\).
+
+First, we compute the semi-perimeter \(s\) and the area of triangle \(ABC\) using Heron's formula:
+\[
+s = \frac{5 + 9 + 10}{2} = 12
+\]
+\[
+\text{Area} = \sqrt{12 \times (12 - 5) \times (12 - 9) \times (12 - 10)} = \sqrt{12 \times 7 \times 3 \times 2} = 6\sqrt{14}
+\]
+
+Next, we find the circumradius \(R\) of triangle \(ABC\):
+\[
+R = \frac{abc}{4 \times \text{Area}} = \frac{5 \times 9 \times 10}{4 \times 6\sqrt{14}} = \frac{450}{24\sqrt{14}} = \frac{75\sqrt{14}}{56}
+\]
+
+We place triangle \(ABC\) in a coordinate system with \(B\) at \((0, 0)\), \(C\) at \((9, 0)\), and find the coordinates of \(A\) as \((\frac{1}{3}, \frac{4\sqrt{14}}{3})\).
+
+The equations of the tangents at \(B\) and \(C\) are derived, and their intersection point \(D\) is found to be \((\frac{9}{2}, -\frac{27\sqrt{14}}{11})\).
+
+The equation of line \(AD\) is determined with slope \(-\frac{10\sqrt{14}}{11}\) and intercept \(\frac{18\sqrt{14}}{11}\). Substituting this into the circumcircle equation, we solve for the intersection points, finding the coordinates of \(P\) as \((\frac{423}{169}, -\frac{108\sqrt{14}}{169})\).
+
+Finally, we compute the distance \(AP\) using the distance formula:
+\[
+AP = \sqrt{\left(\frac{1100}{507}\right)^2 + \left(-\frac{1000\sqrt{14}}{507}\right)^2} = \frac{3900}{507} = \frac{100}{13}
+\]
+
+Thus, \(AP = \frac{100}{13}\), and the sum of the numerator and denominator is \(100 + 13 = 113\).
+
+\[
+\boxed{113}
+\]<｜end▁of▁sentence｜>
